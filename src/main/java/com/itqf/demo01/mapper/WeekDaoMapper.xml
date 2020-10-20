@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itqf.demo01.dao.WeekDao">
+    <resultMap id="voWeekMap" type="com.itqf.demo01.vo.VoWeek">
+        <id column="id" property="wid"></id>
+    </resultMap>
+
+    <select id="findAll" parameterType="user" resultMap="voWeekMap">
+        select w.* , s.`name` from t_week w left join t_staff s on w.u_no = s.u_no
+        where w.u_no = #{no}
+    </select>
+
+    <insert id="insertWeek" parameterType="week" >
+        insert into t_week (title , content ,status ,u_no) value (#{title} ,#{content} ,#{status} ,#{uno}  )
+    </insert>
+
+    <delete id="deleteWeek" parameterType="int" >
+        delete from t_week where id = #{id}
+    </delete>
+
+    <update id="updateWeek" parameterType="com.itqf.demo01.vo.VoWeek" >
+        update t_week
+        <set>
+            <if test="title != null">
+                title = #{title}
+            </if>
+            <if test="content != null">
+                content = #{content}
+            </if>
+        </set>
+        where id = #{wid}
+    </update>
+
+</mapper>

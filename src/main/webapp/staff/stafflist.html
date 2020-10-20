@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>职员列表</title>
+    <link rel="stylesheet" href="../media/layui/css/layui.css">
+    <script src="../media/layui/layui.js"></script>
+    <script src="../media/js/jquery.min.js" ></script>
+    <style type="text/css">
+        #main{
+            width: 90%;
+            padding: 20px;
+            margin: 20px auto;
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="main">
+    <div id="show">
+        <table id="demo" class="layui-table" lay-filter="test"></table>
+    </div>
+</div>
+
+<!--
+    作者：1400956093@qq.com
+    时间：2020-09-27
+    描述：操作表格
+-->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        //监听表格复选框选择
+        table.on('checkbox(test)', function(obj){
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+
+            if(obj.event === 'del'){
+                layer.confirm('真的删除该职员吗', function(index){
+                    layer.alert(data.wid) ;
+                    $.ajax({
+                        url :"/easys/staff/deleteStaff.do" ,
+                        type:"get",
+                        data:"id="+data.id ,
+                        success:function (res) {
+                            if (res.code == 0){
+                                layer.msg(res.msg) ;
+                                obj.del();
+                                layer.close(index);
+                            }else {
+                                layer.msg(res.msg)
+                            }
+                        }
+                    })
+                });
+            }
+        });
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+<!--
+	作者：1400956093@qq.com
+	时间：2020-09-27
+	描述：表格的信息展示
+-->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#demo'
+            ,height: 500
+            ,url: '/easys/staff/findAll.do' //数据接口
+            ,page: true //开启分页
+            ,cols: [[ //表头
+                {field: 'id', title: '编号', width: 180}
+                ,{field: 'uno', title: '账号', width:180 }
+                ,{field: 'name', title: '姓名', width: 180 }
+                ,{field: 'dname', title: '部门', width: 180 }
+                ,{field: 'sex', title: '性别', width:180 }
+                ,{field: 'email', title: '邮箱', width:180 , edit: 'text'}
+                ,{field: 'qq', title: 'QQ', width:180 , edit: 'text'}
+                ,{field: 'phone', title: '手机号', width:180, edit: 'text' }
+                ,{field: 'entryTime', title: '创建日期', width: 250 }
+                ,{fixed: 'right', align:'center', toolbar: '#barDemo',title: '操作', width: 180}
+            ]]
+
+        });
+    });
+</script>
+<!--
+	作者：1400956093@qq.com
+	时间：2020-09-27
+	描述：附加的表格操作
+-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+    layui.use(['table','layer'], function(){
+        var table = layui.table
+            ,layer = layui.layer;
+
+        //监听单元格编辑
+        table.on('edit(test)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            $.ajax({
+                url:"/easys/staff/updateStaff.do" ,
+                type:"get",
+                data:"id="+data.id +"&" + field +'='+ value,
+                success:function (res) {
+                    if (res.code == 0){
+                        layer.msg(res.msg)
+                    }else {
+                        layer.msg(res.msg)
+                    }
+                }
+            })
+        });
+    });
+</script>
+
+
+</body>
+</html>
+

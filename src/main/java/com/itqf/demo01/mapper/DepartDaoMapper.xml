@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itqf.demo01.dao.DepartDao">
+
+    <insert id="insertDepart" parameterType="depart">
+        insert into t_depart (name) value (#{name})
+    </insert>
+
+    <delete id="deleteDepart" parameterType="int">
+        delete from t_depart where id = #{id}
+    </delete>
+
+    <update id="updateDepart" parameterType="depart" >
+        update t_depart set name = #{name} where id = #{id}
+    </update>
+
+    <select id="findDepartByName" parameterType="string" resultType="depart">
+        select * from t_depart where name = #{name};
+    </select>
+
+    <select id="findDepartByID" parameterType="int" resultType="depart">
+        select * from t_depart where id = #{id};
+    </select>
+
+
+    <select id="findAll" resultType="com.itqf.demo01.vo.VoDepart" >
+        select de.*, count(st.d_id) number
+        from t_depart de  left join t_staff st on de.id = st.d_id
+        GROUP BY de.id
+    </select>
+
+</mapper>

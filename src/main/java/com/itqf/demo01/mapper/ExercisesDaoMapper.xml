@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itqf.demo01.dao.ExerciesDao">
+
+    <select id="findType" resultType="com.itqf.demo01.entity.Type" >
+        select  * from t_type
+    </select>
+
+    <insert id="insertExercises" parameterType="map">
+        insert into t_exercises (equestion,eanswer,tid) value (#{equestion},#{eanswer},#{tid})
+    </insert>
+
+    <select id="findAll" resultType="com.itqf.demo01.vo.VoExercises" >
+        select  e.* , t.name type  from t_exercises e left join t_type t on e.tid = t.id
+    </select>
+
+    <select id="findEchartsEx" resultType="com.itqf.demo01.echarts.ExercisesEcharts">
+        select count(1) value , t.name name  from t_exercises e left join t_type t on e.tid = t.id group by tid
+    </select>
+
+    <update id="updateExercises" parameterType="com.itqf.demo01.vo.VoExercises" >
+        update t_exercises
+        <set>
+            <if test="eanswer != null ">
+                eanswer = #{eanswer}
+            </if>
+            <if test="equestion != null ">
+                equestion = #{equestion}
+            </if>
+        </set>
+        where id  = #{id}
+    </update>
+
+    <delete id="deleteExercises" parameterType="int" >
+        delete from t_exercises where id=#{id}
+    </delete>
+
+</mapper>

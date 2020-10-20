@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>请假条管理</title>
+    <link rel="stylesheet" href="../media/layui/css/layui.css">
+    <script src="../media/layui/layui.js"></script>
+    <script src="../media/js/jquery.min.js" ></script>
+
+        <style type="text/css">
+
+            #main{
+                width: 90%;
+                padding: 20px;
+                margin: 20px auto;
+                text-align: center;
+            }
+
+            .layui-table{
+                width:80% ;
+            }
+
+        </style>
+
+    </head>
+<body>
+
+<div id="main">
+
+    <div id="show">
+        <table id="demo" class="layui-table" lay-filter="test"></table>
+    </div>
+
+</div>
+
+<!--
+	作者：1400956093@qq.com
+	时间：2020-09-27
+	描述：附加的表格操作
+-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="pass">同意</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="refuse">不同意</a>
+</script>
+
+<!--
+    作者：1400956093@qq.com
+    时间：2020-09-27
+    描述：操作表格
+-->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        //监听表格复选框选择
+        table.on('checkbox(test)', function(obj){
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+
+            if(obj.event === 'pass'){
+                layer.confirm('确认同意吗', function(index){
+
+                    $.ajax({
+                        url :"/easys/ask/updateAsk.do" ,
+                        type:"get",
+                        data:"id="+data.id +"&status=同意",
+                        success:function (res) {
+                            if (res.code == 0){
+                                layer.msg("处理成功") ;
+                                location.href = "askmanage.html"
+                            }else {
+                                layer.msg(res.msg)
+                            }
+                        }
+                    })
+                });
+            }else if(obj.event === 'refuse'){
+                layer.confirm('真的拒绝申请吗', function(index){
+                    layer.alert(data.wid) ;
+
+                    $.ajax({
+                        url :"/easys/ask/updateAsk.do" ,
+                        type:"get",
+                        data:"id="+data.id +"&status=拒绝",
+                        success:function (res) {
+                            if (res.code == 0){
+                                layer.msg("成功拒绝") ;
+                                location.href = "askmanage.html"
+                            }else {
+                                layer.msg(res.msg)
+                            }
+                        }
+                    })
+                });
+            }
+        });
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>
+<!--
+	作者：1400956093@qq.com
+	时间：2020-09-27
+	描述：表格的信息展示
+-->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#demo'
+            ,height: 500
+            ,width:'90%'
+            ,url: '/easys/ask/findAskByStatus.do?status=未处理' //数据接口
+            ,page: true //开启分页
+            ,cols: [[ //表头
+                {field: 'id', title: '编号', width: 180}
+                ,{field: 'stuname', title: '学生姓名', width: 180 }
+                ,{field: 'startTime', title: '开始时间', width: 250 }
+                ,{field: 'endTime', title: '结束时间', width: 250 }
+                ,{field: 'count', title: '总天数', width: 250 }
+                ,{field: 'reason', title: '请假条内容', width: 300}
+                ,{fixed: 'right', align:'center', toolbar: '#barDemo',title: '操作', width: 180}
+            ]]
+
+        });
+    });
+</script>
+
+<!-- 编辑表格 -->
+
+
+</body>
+</html>
+

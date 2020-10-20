@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itqf.demo01.dao.AskDao">
+
+    <insert id="insertAsk" parameterType="askforleave">
+        insert into t_askforleave
+        (<trim prefixOverrides=",">
+            <if test="sid != null">
+                sid
+            </if>
+            <if test="startTime != null">
+                startTime
+            </if>
+            <if test="endTime != null">
+                , endTime
+            </if>
+            <if test="status != null">
+                , status
+            </if>
+            <if test="count != null">
+                , `count`
+            </if>
+            <if test="reason != null">
+                , reason
+            </if>
+        </trim> )
+        value
+        (<trim prefixOverrides=",">
+            <if test="sid != null">
+               #{sid}
+            </if>
+            <if test="startTime != null">
+                , #{startTime}
+            </if>
+            <if test="endTime != null">
+                , #{endTime}
+            </if>
+            <if test="status != null">
+                , #{status}
+            </if>
+            <if test="count != null">
+                , #{count}
+            </if>
+            <if test="reason != null">
+                , #{reason}
+            </if>
+         </trim>)
+    </insert>
+
+    <delete id="deleteAsk" parameterType="int">
+        delete from t_askforleave where id = #{id}
+    </delete>
+
+    <update id="updateAsk" parameterType="askforleave">
+        update t_askforleave
+        <set>
+            <if test="startTime != null">
+                startTime = #{startTime},
+            </if>
+            <if test="endTime != null">
+                endTime = #{endTime},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="count != 0">
+                 `count` = #{count},
+            </if>
+            <if test="reason != null">
+                reason = #{reason}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findAskByStatus" parameterType="string" resultType="com.itqf.demo01.vo.VoAsk">
+        select ask.* , stu.name stuname from t_askforleave ask left join t_student stu
+        on ask.sid = stu.id
+        where status = #{status}
+    </select>
+    <select id="findAll" resultType="com.itqf.demo01.vo.VoAsk">
+        select ask.* , stu.name stuname from t_askforleave ask left join t_student stu
+        on ask.sid = stu.id
+    </select>
+
+</mapper>

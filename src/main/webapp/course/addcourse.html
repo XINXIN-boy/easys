@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加学科</title>
+    <link rel="stylesheet" href="../media/layui/css/layui.css">
+    <script src="../media/layui/layui.js"></script>
+    <script src="../media/js/jquery.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <style type="text/css">
+        #main{
+            width: 90%;
+            padding: 20px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        #foot{
+            margin-top: 50px ;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="main">
+    <div id="foot">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">学科名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="name" id="nameinput" lay-verify="title" autocomplete="off" placeholder="学科名称" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">周期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="week" placeholder="教学周期" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="float: left">
+                <label class="layui-form-label" style="margin: 10px auto">类型</label>
+                <div id="sel"  v-cloak class="layui-inline">
+                     <select id="dqsel" name="tid">
+                    <option v-for="mc in mcs" :value="mc.id"  >{{mc.name}}</option>
+                </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" disabled id="coursesubmit" lay-submit="" lay-filter="demo1">添加</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+
+
+<!-- 表单提交  -->
+<script>
+    layui.use(['form', 'layedit', 'laydate','layer'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        laydate.render({
+            elem: '#date1'
+        });
+
+        $("#nameinput").change(function () {
+            $.ajax({
+                url:"/easys/course/findCourseByName.do" ,
+                type:"post" ,
+                data:"name=" + $("#nameinput").val(),
+                success:function (data) {
+                    if (data.code == 0){
+                        layer.msg("该学科已存在，请重新命名！")
+                        $("#coursesubmit").attr("disabled" , true)
+                    }else {
+                        layer.msg("该学科名称可用")
+                        $("#coursesubmit").attr("disabled" , false)
+                    }
+                }
+            })
+        })
+
+        //创建一个编辑器
+        var editIndex = layedit.build('LAY_demo_editor');
+
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // })
+
+            $.ajax({
+                url:"/easys/course/addCourse.do",
+                type:"post",
+                data:data.field ,
+                success:function(res){
+                    if(res.code == 0){
+                        layer.msg("添加成功！");
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            })
+            return false;
+        });
+
+        //表单取值
+        layui.$('#LAY-component-form-getval').on('click', function(){
+            var data = form.val('example');
+            alert(JSON.stringify(data));
+        });
+
+    });
+</script>
+<script type="text/javascript">
+
+    var vm = new Vue({
+        el:'#dqsel',
+        data:{
+            mcs : [],
+        },
+    });
+
+    $(function(){
+        $.ajax({
+            type:"post",
+            url:"/easys/exercises/findType.do",
+            dataType:"json",
+            success:function(data){
+                //id为0时为父类
+                if(data.code == 0){
+                    vm.mcs=data.data;
+                }else{
+                    layer.msg(data.msg)
+                }
+            }
+        });
+    });
+
+    $("#dqsel").change(function(){
+        loadfirst($(this).children('option:selected').val());
+    })
+</script>
+
+
+</body>
+</html>
+

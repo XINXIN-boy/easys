@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itqf.demo01.dao.ResourcesDao">
+
+    <resultMap id="questionMap" type="question">
+        <id property="id" column="id"></id>
+        <result column="u_no" property="uNo"></result>
+    </resultMap>
+
+
+    <insert id="insertResources" parameterType="question">
+        insert into t_question
+         (u_no ,question,answer,qtype,star,flag)
+         value
+         (#{uNo},#{question},#{answer},#{qtype},#{star},#{flag})
+    </insert>
+
+    <delete id="deleteResources" parameterType="int">
+        delete from t_question where id = #{id}
+    </delete>
+
+    <update id="updateResources" parameterType="question">
+        update t_question
+        <set>
+            <if test="question != null">
+                `question` = #{question},
+            </if>
+            <if test="answer != null">
+                answer = #{answer},
+            </if>
+            <if test="qtype != null">
+                `qtype` = #{qtype},
+            </if>
+            <if test="star != 0">
+                star = #{star},
+            </if>
+            <if test="flag != null">
+                flag = #{flag},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findAll" resultMap="questionMap">
+        select * from t_question
+    </select>
+
+
+</mapper>

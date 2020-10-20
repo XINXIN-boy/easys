@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title> 添加部门 </title>
+    <link rel="stylesheet" href="../media/layui/css/layui.css">
+    <script src="../media/layui/layui.js"></script>
+    <script src="../media/js/jquery.min.js" ></script>
+    <style type="text/css">
+
+        #main{
+            width: 90%;
+            padding: 20px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #foot{
+            margin-top: 50px ;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="main">
+
+    <div id="foot">
+        <form class="layui-form" action="">
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">部门</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="name" lay-verify="title" id="newDepartName" autocomplete="off" placeholder="新的部门" class="layui-input">
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" >
+                    <button type="submit" class="layui-btn" disabled id="departSubmit" lay-submit="" lay-filter="demo1">添加</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div >
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+            <legend>添加员工到新部门</legend>
+        </fieldset>
+
+        <div id="test6" class="demo-transfer"></div>
+    </div>
+</div>
+
+
+
+<!-- 表单提交  -->
+<script>
+    layui.use(['form', 'layedit', 'laydate','layer'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //创建一个编辑器
+        var editIndex = layedit.build('LAY_demo_editor');
+
+        $("#newDepartName").change(function () {
+            $.ajax({
+                url: "/easys/depart/findDepartByName.do",
+                type:"get",
+                data:"name="+ $("#newDepartName").val(),
+                success:function (data) {
+                    if (data.code == 0){
+                        layer.msg("该部门已存在，请重新命名！")
+                        $("#departSubmit").attr("#disabled" , true)
+                    }else {
+                        layer.msg("可用的部门名称")
+                        $("#departSubmit").attr("#disabled" , false)
+                    }
+                }
+
+            })
+        })
+
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            })
+
+            $.ajax({
+                url:"/easys/depart/addDepart.do",
+                type:"post",
+                data:data.field ,
+                success:function(res){
+                    if(res.code == 0){
+                        layer.msg("添加成功！");
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            })
+
+            return false;
+        });
+
+        //表单取值
+        layui.$('#LAY-component-form-getval').on('click', function(){
+            var data = form.val('example');
+            alert(JSON.stringify(data));
+        });
+
+    });
+</script>
+<script>
+
+    layui.use(['transfer', 'layer', 'util'], function(){
+        var $ = layui.$
+            ,transfer = layui.transfer
+            ,layer = layui.layer
+            ,util = layui.util;
+
+        var staffs = [] ;
+
+        layer.render(function () {
+            $.ajax({
+                url:"/easys/staff/findAll.do" ,
+                type:"get" ,
+                success:function(res){
+
+                    if(res.code == 0){
+                        staffs = res.data
+                    }else{
+                        layer.msg(data.msg);
+                    }
+                }
+            })
+        })
+
+        //穿梭时的回调
+        transfer.render({
+            elem: '#test6'
+            ,data: data1
+            ,title: ['所有员工', '新部门的员工']  //自定义标题
+            ,parseData: function(res){
+                layer.alert(res.name)
+                return {
+                    "value": res.id //数据值
+                    ,"title": res.name //数据标题
+                }
+            }
+            ,onchange: function(obj, index){
+                var arr = ['左边', '右边'];
+                layer.alert('来自 <strong>'+ arr[index] + '</strong> 的数据：'+ JSON.stringify(obj)); //获得被穿梭时的数据
+            }
+        })
+
+        //批量办法定事件
+        util.event('lay-demoTransferActive', {
+            getData: function(othis){
+                var getData = transfer.getData('key123'); //获取右侧数据
+                layer.alert(JSON.stringify(getData));
+            }
+        });
+    });
+
+
+
+
+</script>
+
+
+</body>
+</html>
+

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title> 添加资源 </title>
+    <link rel="stylesheet" href="../media/layui/css/layui.css">
+    <script src="../media/layui/layui.js"></script>
+    <script src="../media/js/jquery.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <style type="text/css">
+
+        #main{
+            width: 90%;
+            padding: 20px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #foot{
+            margin-top: 50px ;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="main">
+
+    <div id="foot">
+        <form class="layui-form" action="">
+
+            <div class="layui-form-item layui-input-inline">
+                <label class="layui-form-label">类型</label>
+                <div class="layui-input-block">
+                    <input type="text" name="qtype" lay-verify="title" autocomplete="off" placeholder="类型" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">资源</label>
+                <div class="layui-input-block">
+                    <input type="text" name="question" lay-verify="title" autocomplete="off" placeholder="资源" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <textarea name="answer" placeholder="内容" class="layui-textarea"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" >
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">添加</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+
+
+<!-- 表单提交  -->
+<script>
+    layui.use(['form', 'layedit', 'laydate','layer'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //创建一个编辑器
+        var editIndex = layedit.build('LAY_demo_editor');
+
+
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // })
+
+            $.ajax({
+                url:"/easys/resources/addResources.do?flag=资源",
+                type:"post",
+                data:data.field ,
+                success:function(res){
+                    if(res.code == 0){
+                        layer.msg("添加成功！");
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            })
+
+            return false;
+        });
+
+        //表单取值
+        layui.$('#LAY-component-form-getval').on('click', function(){
+            var data = form.val('example');
+            alert(JSON.stringify(data));
+        });
+
+    });
+</script>
+
+
+</body>
+</html>
+

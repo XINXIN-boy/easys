@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itqf.demo01.dao.StaffDao">
+    <resultMap id="staffMap" type="staff">
+        <id property="id" column="id"></id>
+
+        <result property="uno" column="u_no" ></result>
+        <result property="did" column="d_id" ></result>
+        <result property="dname" column="d_name" ></result>
+    </resultMap>
+    <insert id="insertStaff" parameterType="staff" >
+        insert into t_staff
+        (u_no,d_id,d_name,name,sex,email,qq,phone,heading,entryTime,flag)
+         value (#{uno},#{did},#{dname},#{name},#{sex},#{email},#{qq},#{phone},#{heading},#{entryTime},#{flag})
+    </insert>
+
+
+    <delete id="deleteStaff" parameterType="int">
+        delete from t_staff where id =#{id}
+    </delete>
+
+    <update id="updateInfo" parameterType="staff">
+        update t_staff
+        <set>
+            <if test="name != null ">
+                name = #{name} , sex = #{sex}
+            </if>
+            <if test="phone != null">
+                phone = #{phone} ,
+            </if>
+            <if test="qq != null">
+               qq = #{qq} ,
+            </if>
+            <if test="email != null">
+                email = #{email}
+            </if>
+        </set>
+        where u_no = #{uno}
+    </update>
+
+    <select id="findStaff" parameterType="String" resultMap="staffMap">
+        select * from t_staff where `u_no` = #{no}
+    </select>
+    <select id="findStaffById" parameterType="int" resultMap="staffMap">
+        select * from t_staff where `id` = #{id}
+    </select>
+    <select id="findAll" resultMap="staffMap">
+        select * from t_staff
+    </select>
+
+
+
+</mapper>
